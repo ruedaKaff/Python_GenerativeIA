@@ -1,12 +1,11 @@
 import os 
 import gradio as gr
 import requests, json
-from dotenv import load_dotenv, find_dotenv
 # from transformers import pipeline
 from dotenv import load_dotenv, find_dotenv
 _ = load_dotenv(find_dotenv()) #Readlocal .env file
 hf_api_key= os.environ['HF_API_KEY']
-endpoint_URL= os.environ['HF_AP_NER_BASE']
+endpoint_URL= os.environ['HF_API_NER_BASE']
 
 # get_completion2 = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
