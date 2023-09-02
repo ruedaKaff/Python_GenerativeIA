@@ -31,19 +31,35 @@ def get_completion(inputs, parameters=None, ENDPOINT_URL=endpoint_URL):
         return None  # Handle error cases appropriately
 
 
-def generator (prompt):
+def generator (prompt, negative_prompt, steps, guidance, width, height):
+    params = {
+        "negative_prompt": negative_prompt,
+        "num_inference_steps": steps,
+        "guidance_scale": guidance,
+        "width": width,
+        "height": height
+    }
     unique_prompt = f"{prompt}_{int(time.time())}"
-    output = get_completion(unique_prompt)
+    output = get_completion(unique_prompt, params)
     encoded_data = base64.b64encode(output).decode("utf-8")
     result_image = Image.open(io.BytesIO(base64.b64decode(encoded_data)))
     return result_image
 
 demo = gr.Interface (fn= generator,
-                     inputs= gr.Textbox(label="Prompt you text"),
-                     outputs= gr.Image(label="Image generated"),
-                     title="Text to image using StableDiffusion",
-                     allow_flagging="never",
-                    #  cache=0,
-                     examples=["A astronaut on suburbs with a piano","A mecha wizard with lightings in a favela"]
-)
+                     inputs=[
+                        gr.Textbox(label="Your prompt"),
+                        gr.Textbox(label="Negative prompt"),
+                        gr.Slider(label="Inference Steps", minimum=1, maximum=100, value=25,
+                                 info="In how many steps will the denoiser denoise the image?"),
+                        gr.Slider(label="Guidance Scale", minimum=1, maximum=20, value=7, 
+                                  info="Controls how much the text prompt influences the result"),
+                        gr.Slider(label="Width", minimum=64, maximum=512, step=64, value=512),
+                        gr.Slider(label="Height", minimum=64, maximum=512, step=64, value=512),
+                     ],
+                    outputs=[gr.Image(label="Result")],
+                    title="Image Generation with Stable Diffusion",
+                    description="Generate any image with Stable Diffusion",
+                    allow_flagging="never",
+                    examples=["A astronaut on suburbs with a piano","A mecha wizard with lightings in a favela"]
+                    )
 demo.launch(server_port=int(os.environ['PORT1']))
