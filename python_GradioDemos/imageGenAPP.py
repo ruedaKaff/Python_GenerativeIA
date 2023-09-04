@@ -45,21 +45,27 @@ def generator (prompt, negative_prompt, steps, guidance, width, height):
     result_image = Image.open(io.BytesIO(base64.b64decode(encoded_data)))
     return result_image
 
-demo = gr.Interface (fn= generator,
-                     inputs=[
-                        gr.Textbox(label="Your prompt"),
-                        gr.Textbox(label="Negative prompt"),
-                        gr.Slider(label="Inference Steps", minimum=1, maximum=100, value=25,
-                                 info="In how many steps will the denoiser denoise the image?"),
-                        gr.Slider(label="Guidance Scale", minimum=1, maximum=20, value=7, 
-                                  info="Controls how much the text prompt influences the result"),
-                        gr.Slider(label="Width", minimum=64, maximum=512, step=64, value=512),
-                        gr.Slider(label="Height", minimum=64, maximum=512, step=64, value=512),
-                     ],
-                    outputs=[gr.Image(label="Result")],
-                    title="Image Generation with Stable Diffusion",
-                    description="Generate any image with Stable Diffusion",
-                    allow_flagging="never",
-                    examples=["A astronaut on suburbs with a piano","A mecha wizard with lightings in a favela"]
-                    )
-demo.launch(server_port=int(os.environ['PORT1']))
+with gr.Blocks() as demo:
+    gr.Markdown("# Image Generation with Stable Diffusion")
+    with gr.Row():
+        with gr.Column(scale=4):
+            prompt = gr.Textbox(label="Your prompt") #Give prompt some real estate
+        with gr.Column(scale=1, min_width=50):
+            btn = gr.Button("Submit") #Submit button side by side!
+    with gr.Accordion("Advanced options", open=False): #Let's hide the advanced options!
+            negative_prompt = gr.Textbox(label="Negative prompt")
+            with gr.Row():
+                with gr.Column():
+                    steps = gr.Slider(label="Inference Steps", minimum=1, maximum=100, value=25,
+                      info="In many steps will the denoiser denoise the image?")
+                    guidance = gr.Slider(label="Guidance Scale", minimum=1, maximum=20, value=7,
+                      info="Controls how much the text prompt influences the result")
+                with gr.Column():
+                    width = gr.Slider(label="Width", minimum=64, maximum=512, step=64, value=512)
+                    height = gr.Slider(label="Height", minimum=64, maximum=512, step=64, value=512)
+    output = gr.Image(label="Result") #Move the output up too
+            
+    btn.click(fn=generator, inputs=[prompt,negative_prompt,steps,guidance,width,height], outputs=[output])
+
+gr.close_all()
+demo.launch(share=True, server_port=int(os.environ['PORT1']))
