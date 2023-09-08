@@ -27,6 +27,21 @@ def get_completion(inputs, parameters=None,ENDPOINT_URL=endpoint_URL):
     return json.loads(response.content.decode("utf-8"))
 
 
+#Doing it all at once
+# def caption_and_generate(image):
+#     caption = captioner(image)
+#     image = generate(caption)
+#     return [caption, image]
+
+# with gr.Blocks() as demo:
+#     gr.Markdown("# Describe-and-Generate game 🖍️")
+#     image_upload = gr.Image(label="Your first image",type="pil")
+#     btn_all = gr.Button("Caption and generate")
+#     caption = gr.Textbox(label="Generated caption")
+#     image_output = gr.Image(label="Generated Image")
+
+#     btn_all.click(fn=caption_and_generate, inputs=[image_upload], outputs=[caption, image_output]
+
 def sumarize(input): 
     output = get_completion(input)
     return output[0] ['summary_text']

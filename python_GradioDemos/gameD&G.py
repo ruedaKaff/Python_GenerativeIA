@@ -50,7 +50,8 @@ def base64_to_pil(img_base64):
 
 def captioner(image):
     base64_image = image_to_base64_str(image)
-    result = get_completion(base64_image, None, ITT_Endpoint)
+    unique_prompt = f"{base64_image}_{int(time.time())}"
+    result = get_completion(unique_prompt, None, ITT_Endpoint)
     print(result)
     return result[0]['generated_text']
 
@@ -68,7 +69,7 @@ with gr.Blocks() as demo:
     image_upload = gr.Image(label="Your first image",type="pil")
     with gr.Row():
         with gr.Column(scale=2) :
-            caption = gr.Textbox(label="Generated caption")
+            caption = gr.Textbox(label="Generated caption, try to be especific whit details if you want to promp it yourselft)")
         with gr.Column(scale=2) :
             btn_caption = gr.Button("Generate caption")
             btn_image = gr.Button("Generate image")
@@ -82,4 +83,4 @@ with gr.Blocks() as demo:
     btn_image.click(fn=generate, inputs=[caption], outputs=[image_output])
 
 gr.close_all()
-demo.launch( share=True, server_port=int(os.environ['PORT2']))
+demo.launch( server_port=int(os.environ['PORT2']))
